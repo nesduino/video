@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reproductor con lista de reproducción</title>
   
   <!-- Video.js CSS -->
-  <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
+  <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet">
 </head>
 <body>
-  
+  <h1>Reproductor con múltiples videos</h1>
 
   <!-- Video.js Player -->
   <video
@@ -17,46 +18,47 @@
     controls
     width="640"
     height="360"
-    muted
-    loop
-    data-setup='{
-      "techOrder": ["youtube"],
-      "autoplay": true,
-      "loop": true,
-      "sources": [{
-        "type": "video/youtube",
-        "src": "https://www.youtube.com/watch?v=0xrsLLSCWsw"
-      }]
-    }'>
+    muted>
   </video>
 
   <!-- Video.js JS -->
-  <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
-  <!-- YouTube Plugin for Video.js -->
-  <script src="https://cdn.jsdelivr.net/npm/videojs-youtube/dist/Youtube.min.js"></script>
+  <script src="https://vjs.zencdn.net/8.0.4/video.min.js"></script>
+  <!-- Video.js Playlist Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/videojs-playlist/dist/videojs-playlist.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       // Inicializar el reproductor
       const player = videojs('video-player');
 
-      // Configurar para pantalla completa y reproducir automáticamente
-      player.ready(function () {
-        // Poner el video en pantalla completa
-        const requestFullscreen = player.requestFullscreen || player.enterFullscreen;
-        if (requestFullscreen) {
-          player.requestFullscreen();
+      // Definir la lista de reproducción
+      const playlist = [
+        {
+          sources: [{ src: 'https://www.youtube.com/watch?v=RvRhUHTV_8k', type: 'video/youtube' }],
+          poster: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+        },
+        {
+          sources: [{ src: 'https://www.youtube.com/watch?v=mv0ecx5XL84', type: 'video/youtube' }],
+          poster: 'https://img.youtube.com/vi/3JZ_D3ELwOQ/maxresdefault.jpg',
         }
+      ];
 
-        // Reproducir automáticamente
+      // Configurar la lista de reproducción
+      player.playlist(playlist);
+
+      // Reproducir automáticamente el siguiente video en la lista
+      player.playlist.autoadvance(0);
+
+      // Hacer que la lista de reproducción se repita de forma infinita
+      player.on('playlistitem', function () {
+        console.log('Reproduciendo siguiente video...');
+      });
+      player.playlist.repeat(true);
+
+      // Comenzar reproducción automáticamente
+      player.ready(function () {
         player.play().catch(error => {
-          console.error('Error al reproducir automáticamente:', error);
-        });
-
-        // Forzar el bucle infinito (en caso de que no funcione por configuración)
-        player.on('ended', function () {
-          player.currentTime(0);
-          player.play();
+          console.error('Error al iniciar la reproducción:', error);
         });
       });
     });
